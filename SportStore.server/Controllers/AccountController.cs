@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using SportStore.server.Data.Models;
 using SportStore.server.Helpers;
 using SportStore.server.Requests;
+using System.Data;
 using System.Security.Claims;
 
 namespace SportStore.server.Controllers;
 
 [Route("api/account")]
 [ApiController]
-public class AccountController(UserManager<ApplicationUser> userManager, JwtHelper jwtHelper) : ControllerBase
+public class AccountController(UserManager<ApplicationUser> userManager, JwtHelper jwtHelper, RoleManager<IdentityRole> roleManager) : ControllerBase
 {
     [HttpPost("register")]
     [Authorize(Roles= "admin")]
@@ -19,7 +20,20 @@ public class AccountController(UserManager<ApplicationUser> userManager, JwtHelp
         var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded) return BadRequest(result.Errors);
-        await userManager.AddToRoleAsync(user, "user");
+        if (!string.IsNullOrEmpty(request.Role))
+        {
+            if (await roleManager.RoleExistsAsync(request.Role!))
+                await userManager.AddToRoleAsync(user, request.Role!);
+
+            else
+            {
+                return BadRequest($"Роль {request.Role} не найдена!");
+            }
+        }
+        else
+        {
+            await userManager.AddToRoleAsync(user, "user");
+        }
         return Created();
     }
 

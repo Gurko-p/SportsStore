@@ -1,3 +1,3 @@
 ﻿namespace SportStore.server.Requests;
 
-public class LoginDto : RegisterDto;
+public class LoginDto : AuthBaseDto;
