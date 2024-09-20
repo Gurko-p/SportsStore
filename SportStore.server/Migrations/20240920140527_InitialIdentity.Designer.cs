@@ -12,7 +12,7 @@ using SportStore.server.Data.Contexts;
 namespace SportStore.server.Migrations
 {
     [DbContext(typeof(IdentityApplicationDbContext))]
-    [Migration("20240920113118_InitialIdentity")]
+    [Migration("20240920140527_InitialIdentity")]
     partial class InitialIdentity
     {
         /// <inheritdoc />

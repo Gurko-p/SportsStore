@@ -17,7 +17,7 @@ public class CategoriesController(DataManager dataManager) : ControllerBase
     public async Task<IActionResult> Categories()
     {
         var categories = 
-            await dataManager.Categories.Query()
+            await dataManager.Categories.Query().AsNoTracking()
                 .ToListAsync();
         return Ok(categories);
     }

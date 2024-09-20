@@ -17,9 +17,7 @@ public class OrdersController(DataManager dataManager) : ControllerBase
     public async Task<IActionResult> Orders()
     {
         var orders = 
-            await dataManager.Orders.Query()
-                .Include(x => x.Carts)
-                .ToListAsync();
+            await dataManager.Orders.Query().AsNoTracking().ToListAsync();
         return Ok(orders);
     }
 
