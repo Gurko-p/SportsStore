@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SportStore.server.Data.Models;
 using SportStore.server.Helpers;
 using SportStore.server.Requests;
+using System.Security.Claims;
 
 namespace SportStore.server.Controllers;
 
@@ -30,5 +31,14 @@ public class AccountController(UserManager<ApplicationUser> userManager, JwtHelp
             return Unauthorized();
         var token = jwtHelper.GetJwtTokenAsync(user);
         return Ok(new { Token = token });
+    }
+
+    [HttpPost("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        await Task.Delay(0);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Ok(userId);
     }
 }
