@@ -33,12 +33,13 @@ public class AccountController(UserManager<ApplicationUser> userManager, JwtHelp
         return Ok(new { Token = token });
     }
 
-    [HttpPost("me")]
+    [HttpGet("me")]
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
         await Task.Delay(0);
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Ok(userId);
+        var roles = User.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray();
+        return Ok(new { userName = userId, roles });
     }
 }
