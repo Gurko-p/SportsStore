@@ -23,7 +23,7 @@ public class CategoriesController(DataManager dataManager) : ControllerBase
     }
 
     [HttpGet]
-    [Route("category/{id}")]
+    [Route("item/{id}")]
     public async Task<IActionResult> Get(int id)
     {
         if (id <= 0)
