@@ -25,7 +25,7 @@ public class CartsController(DataManager dataManager) : ControllerBase
     }
 
     [HttpGet]
-    [Route("cart/{id}")]
+    [Route("item/{id}")]
     public async Task<IActionResult> Get(int id)
     {
         if (id <= 0)
