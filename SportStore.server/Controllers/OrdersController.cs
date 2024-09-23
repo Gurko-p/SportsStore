@@ -75,7 +75,7 @@ public class OrdersController(DataManager dataManager) : ControllerBase
                 return StatusCode(500, new { error = "Ошибка на сервере. Попробуйте позже." });
             }
         }
-        return CreatedAtAction(nameof(Create), new { id = createdOrder.Id }, order);
+        return CreatedAtAction(nameof(Create), new { id = createdOrder.Id }, createdOrder);
     }
 
 
