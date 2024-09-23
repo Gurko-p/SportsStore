@@ -28,6 +28,19 @@ public class ProductRepository(ApplicationDbContext context) : IRepository<Produ
         await SaveChangesAsync();
     }
 
+    public async Task<Product> CreateWithReturnCreatedAsync(Product item)
+    {
+        await context.Products.AddAsync(item);
+        await SaveChangesAsync();
+        return item;
+    }
+
+    public async Task CreateRangeAsync(IEnumerable<Product> items)
+    {
+        await context.Products.AddRangeAsync(items);
+        await SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(Product item)
     {
         context.Products.Update(item);

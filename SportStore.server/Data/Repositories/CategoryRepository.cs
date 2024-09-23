@@ -34,6 +34,19 @@ public class CategoryRepository : IRepository<Category>
         await SaveChangesAsync();
     }
 
+    public async Task<Category> CreateWithReturnCreatedAsync(Category item)
+    {
+        await _context.Categories.AddAsync(item);
+        await SaveChangesAsync();
+        return item;
+    }
+
+    public async Task CreateRangeAsync(IEnumerable<Category> items)
+    {
+        await _context.Categories.AddRangeAsync(items);
+        await SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(Category item)
     {
         _context.Categories.Update(item);
@@ -52,4 +65,6 @@ public class CategoryRepository : IRepository<Category>
     {
         await _context.SaveChangesAsync();
     }
+
+
 }

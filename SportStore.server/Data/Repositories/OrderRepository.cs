@@ -2,6 +2,7 @@
 using SportStore.server.Data.Contexts;
 using SportStore.server.Data.Interfaces;
 using SportStore.server.Data.Models;
+using SportStore.server.Requests;
 
 namespace SportStore.server.Data.Repositories;
 
@@ -28,6 +29,20 @@ public class OrderRepository(ApplicationDbContext context) : IRepository<Order>
         await SaveChangesAsync();
     }
 
+    public async Task<Order> CreateWithReturnCreatedAsync(Order item)
+    {
+        await context.Orders.AddAsync(item);
+        await SaveChangesAsync();
+        return item;
+    }
+
+    public async Task CreateRangeAsync(IEnumerable<Order> items)
+    {
+        await context.Orders.AddRangeAsync(items);
+        await SaveChangesAsync();
+    }
+
+
     public async Task UpdateAsync(Order item)
     {
         context.Orders.Update(item);
@@ -45,5 +60,10 @@ public class OrderRepository(ApplicationDbContext context) : IRepository<Order>
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
+    }
+
+    public Task AddOrderCarts(OrderDto orderDto)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportStore.server.Data.Infrastructure;
 using SportStore.server.Data.Models;
+using SportStore.server.Requests;
 
 namespace SportStore.server.Controllers;
 
@@ -41,9 +42,42 @@ public class OrdersController(DataManager dataManager) : ControllerBase
     [Route("create")]
     public async Task<IActionResult> Create([FromBody] Order order)
     {
+        order.OrderDate ??= DateTime.Now;
         await dataManager.Orders.CreateAsync(order);
         return CreatedAtAction(nameof(Create), new { id = order.Id }, order);
     }
+
+    [HttpPost]
+    [Route("createOrderCarts")]
+    public async Task<IActionResult> CreateOrderCart([FromBody] OrderDto order)
+    {
+        Order createdOrder = null;
+        await using (var transaction = await dataManager.ApplicationDbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                createdOrder =  await dataManager.Orders.CreateWithReturnCreatedAsync(new Order { Address = order.Address, OrderDate = DateTime.Now, UserId = order.UserId });
+                var carts = order.Carts?.Select(cart => new Cart
+                    {
+                        OrderId = createdOrder.Id,
+                        ProductId = cart.ProductId,
+                        Quantity = cart.Quantity
+                    }).ToArray();
+                if (carts != null && carts.Any())
+                {
+                    await dataManager.Carts.CreateRangeAsync(carts);
+                }
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { error = "Ошибка на сервере. Попробуйте позже." });
+            }
+        }
+        return CreatedAtAction(nameof(Create), new { id = createdOrder.Id }, order);
+    }
+
 
     [HttpPut]
     [Route("update/{id}")]

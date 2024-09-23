@@ -5,7 +5,7 @@ using SportStore.server.Data.Models;
 
 namespace SportStore.server.Data.Repositories;
 
-public class OrderItemRepository(ApplicationDbContext context) : IRepository<Cart>
+public class CartRepository(ApplicationDbContext context) : IRepository<Cart>
 {
     public async Task<List<Cart>> GetAllAsync()
     {
@@ -27,6 +27,20 @@ public class OrderItemRepository(ApplicationDbContext context) : IRepository<Car
         await context.Carts.AddAsync(item);
         await SaveChangesAsync();
     }
+
+    public async Task<Cart> CreateWithReturnCreatedAsync(Cart item)
+    {
+        await context.Carts.AddAsync(item);
+        await SaveChangesAsync();
+        return item;
+    }
+
+    public async Task CreateRangeAsync(IEnumerable<Cart> items)
+    {
+        await context.Carts.AddRangeAsync(items);
+        await SaveChangesAsync();
+    }
+
 
     public async Task UpdateAsync(Cart item)
     {
