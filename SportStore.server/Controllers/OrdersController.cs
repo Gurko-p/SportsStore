@@ -17,10 +17,42 @@ public class OrdersController(DataManager dataManager) : ControllerBase
     [Route("list")]
     public async Task<IActionResult> Orders()
     {
-        var orders = 
+        var orders =
             await dataManager.Orders.Query().AsNoTracking().ToListAsync();
         return Ok(orders);
     }
+
+    [HttpGet]
+    [Route("myOrders/{userId}")]
+    public async Task<IActionResult> MyOrders(string userId)
+    {
+        var orders =
+            await dataManager.Carts.Query()
+                .Include(x => x.Order)
+                .Include(x => x.Product)
+                .Where(x => x.Order!.UserId == userId)
+                .GroupBy(x => new { x.OrderId, x.Order!.OrderDate, x.Order.Address })
+                .AsNoTracking()
+                .Select(x => new
+                {
+                    x.Key.OrderId,
+                    x.Key.OrderDate,
+                    x.Key.Address,
+                    Products = x.Where(a => a.OrderId == x.Key.OrderId)
+                        .Select(a => new
+                        {
+                            a.Quantity,
+                            a.Product!.Category!.CategoryName,
+                            a.Product.Name,
+                            a.Product.Description,
+                            a.Product.Price
+                        })
+                })
+
+                .ToListAsync();
+        return Ok(orders);
+    }
+
 
     [HttpGet]
     [Route("item/{id}")]
@@ -56,13 +88,13 @@ public class OrdersController(DataManager dataManager) : ControllerBase
         {
             try
             {
-                createdOrder =  await dataManager.Orders.CreateWithReturnCreatedAsync(new Order { Address = order.Address, OrderDate = DateTime.Now, UserId = order.UserId });
+                createdOrder = await dataManager.Orders.CreateWithReturnCreatedAsync(new Order { Address = order.Address, OrderDate = DateTime.Now, UserId = order.UserId });
                 var carts = order.Carts?.Select(cart => new Cart
-                    {
-                        OrderId = createdOrder.Id,
-                        ProductId = cart.ProductId,
-                        Quantity = cart.Quantity
-                    }).ToArray();
+                {
+                    OrderId = createdOrder.Id,
+                    ProductId = cart.ProductId,
+                    Quantity = cart.Quantity
+                }).ToArray();
                 if (carts != null && carts.Any())
                 {
                     await dataManager.Carts.CreateRangeAsync(carts);
