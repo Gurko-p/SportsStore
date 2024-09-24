@@ -24,6 +24,26 @@ public class ProductsController(DataManager dataManager) : ControllerBase
     }
 
     [HttpGet]
+    [Route("list/chunk")]
+    public async Task<IActionResult> ProductsChunk(int page = 1, int pageSize = 10)
+    {
+        var products =
+            await dataManager.Products.Query()
+                .Include(x => x.Category)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        return Ok(products);
+    }
+
+    [HttpGet("totalCount")]
+    public async Task<ActionResult<int>> GetItemsCount()
+    {
+        return await dataManager.Products.Query().CountAsync();
+    }
+
+
+    [HttpGet]
     [Route("item/{id}")]
     public async Task<IActionResult> Get(int id)
     {
