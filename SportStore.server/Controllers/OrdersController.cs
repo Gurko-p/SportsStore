@@ -81,8 +81,12 @@ public class OrdersController(DataManager dataManager) : ControllerBase
 
     [HttpPost]
     [Route("createOrderCarts")]
-    public async Task<IActionResult> CreateOrderCart([FromBody] OrderDto order)
+    public async Task<IActionResult> CreateOrderCart([FromBody] OrderDto? order)
     {
+        if (order is null || string.IsNullOrEmpty(order.UserId) || string.IsNullOrEmpty(order.Address) || order.Carts is null || !order.Carts.Any())
+        {
+            return BadRequest("Некоррекный запрос на добавление заказа");
+        }
         Order createdOrder = null;
         await using (var transaction = await dataManager.ApplicationDbContext.Database.BeginTransactionAsync())
         {
