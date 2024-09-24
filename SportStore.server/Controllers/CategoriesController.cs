@@ -8,7 +8,7 @@ namespace SportStore.server.Controllers;
 
 [Route("api/categories")]
 [ApiController]
-//[Authorize(Roles = "admin")]
+[Authorize]
 public class CategoriesController(DataManager dataManager) : ControllerBase
 {
 
@@ -40,6 +40,7 @@ public class CategoriesController(DataManager dataManager) : ControllerBase
 
     [HttpPost]
     [Route("create")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Create([FromBody] Category category)
     {
         await dataManager.Categories.CreateAsync(category);
@@ -48,6 +49,7 @@ public class CategoriesController(DataManager dataManager) : ControllerBase
 
     [HttpPut]
     [Route("update/{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Update(int id, [FromBody] Category category)
     {
         if (id != category.Id)
@@ -60,6 +62,7 @@ public class CategoriesController(DataManager dataManager) : ControllerBase
 
     [HttpDelete]
     [Route("remove/{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Delete(int id)
     {
         await dataManager.Categories.DeleteAsync(id);

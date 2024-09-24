@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SportStore.server.Data.Models;
 using SportStore.server.Helpers;
 using SportStore.server.Requests;
-using System.Data;
 using System.Security.Claims;
 
 namespace SportStore.server.Controllers;

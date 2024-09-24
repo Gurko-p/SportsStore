@@ -8,12 +8,12 @@ namespace SportStore.server.Controllers;
 
 [Route("api/products")]
 [ApiController]
+[Authorize]
 public class ProductsController(DataManager dataManager) : ControllerBase
 {
 
     [HttpGet]
     [Route("list")]
-    //[Authorize]
     public async Task<IActionResult> Products()
     {
         var products = 
@@ -61,7 +61,7 @@ public class ProductsController(DataManager dataManager) : ControllerBase
 
     [HttpPost]
     [Route("create")]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Create([FromBody] Product product)
     {
         await dataManager.Products.CreateAsync(product);
@@ -70,7 +70,7 @@ public class ProductsController(DataManager dataManager) : ControllerBase
 
     [HttpPut]
     [Route("update/{id}")]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Update(int id, [FromBody] Product product)
     {
         if (id != product.Id)
@@ -83,7 +83,7 @@ public class ProductsController(DataManager dataManager) : ControllerBase
 
     [HttpDelete]
     [Route("remove/{id}")]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Delete(int id)
     {
         await dataManager.Products.DeleteAsync(id);

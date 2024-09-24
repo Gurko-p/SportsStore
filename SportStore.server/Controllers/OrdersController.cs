@@ -9,7 +9,7 @@ namespace SportStore.server.Controllers;
 
 [Route("api/orders")]
 [ApiController]
-//[Authorize(Roles = "admin")]
+[Authorize]
 public class OrdersController(DataManager dataManager) : ControllerBase
 {
 
@@ -117,6 +117,7 @@ public class OrdersController(DataManager dataManager) : ControllerBase
 
     [HttpPut]
     [Route("update/{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Update(int id, [FromBody] Order order)
     {
         if (id != order.Id)
@@ -129,6 +130,7 @@ public class OrdersController(DataManager dataManager) : ControllerBase
 
     [HttpDelete]
     [Route("remove/{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Delete(int id)
     {
         await dataManager.Orders.DeleteAsync(id);
